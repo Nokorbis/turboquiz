@@ -5,7 +5,7 @@
 
 <div class:highlight>
     <div class="avatar-circle">
-        <img src={imageUrl} alt="" />
+        <img src={imageUrl} class="mx-auto" alt="" />
     </div>
 </div>
 

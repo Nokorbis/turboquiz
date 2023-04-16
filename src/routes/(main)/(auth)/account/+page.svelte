@@ -1,6 +1,7 @@
 <script>
     import { invalidate } from '$app/navigation';
     import { enhance } from '$app/forms';
+    import { toastStore } from '@skeletonlabs/skeleton';
     import AvatarDisplay from '$lib/components/profile/AvatarDisplay.svelte';
 
     /** @type {import('./$types').PageData} */
@@ -19,16 +20,14 @@
     let imageInput;
 
     let nameSaving = false;
-    let nameSaved = false;
     let pictureSaving = false;
     let pictureSaved = false;
 
     function nameHandling({}) {
-        nameSaved = false;
         //TODO : debounce
         return async ({ result }) => {
             if (result.type === 'success') {
-                nameSaved = true;
+                toastStore.trigger({ message : 'Nom sauvegardé', background: 'variant-filled-success'});
             }
             invalidate('turbo:profile');
         };
@@ -104,10 +103,12 @@
 
 <div class="screen-center">
     <div class="profile-editor">
-        <div class="avatar-editor">
+        <div class="my-2 card variant-glass-primary p-2">
+            <!-- <Avatar src={profilePicture} rounded="rounded-full" width="w-64 mx-auto" border="border-[1rem] border-orange-500"></Avatar> -->
             <AvatarDisplay imageUrl={profilePicture} />
-            <button class="btn" on:click={triggerImageSelection}>Changer l'image</button>
-            <br />
+            <div class="text-center mt-3">
+                <button class="btn bg-secondary-500 text-white" on:click={triggerImageSelection}>Changer l'image</button>
+            </div>
             <input
                 bind:this={imageInput}
                 type="file"
@@ -115,29 +116,25 @@
                 name="avatar"
                 accept="image/*"
                 on:change={avatarHandling}
-                style="visibility: hidden;"
+                style="display: none;"
             />
         </div>
-        <div class="name-editor">
+        <div class="card p-4 variant-glass-primary">
             <form class="form-name" action="?/updateName" method="POST" use:enhance={nameHandling}>
                 <input type="hidden" name="profile-id" value={profile?.user_id} />
-                <label for="display-name">Nom affiché</label>
+                <label class="label text-left" for="display-name">Nom affiché</label>
                 <input
+                    class="input bg-white"
                     id="display-name"
                     name="display-name"
                     type="text"
                     bind:value={displayName}
-                    on:keypress={() => (nameSaved = false)}
                 />
-                <button class="btn name-btn">Changer le nom</button>
+                <button class="btn bg-secondary-500 text-white mt-2">Changer le nom</button>
             </form>
         </div>
     </div>
 </div>
-
-{#if nameSaved}
-    Nom sauvegardé
-{/if}
 
 <style>
     .profile-editor {
@@ -145,32 +142,9 @@
         margin-inline: auto;
         text-align: center;
     }
-    .form-name {
-        display: grid;
-    }
-    label[for='display-name'] {
-        background-color: var(--turbo-darkgray);
-        color: white;
-        padding: 1rem;
-        font-size: 1.125rem;
-    }
-    form > label {
-        font-weight: bold;
-    }
 
     #display-name {
         text-align: center;
-        font-size: 1.375rem;
-        padding: 1rem;
     }
 
-    .btn {
-        outline-color: transparent;
-        border-radius: 0.5em;
-    }
-
-    .name-btn {
-        background-color: var(--turbo-orange);
-        color: white;
-    }
 </style>

@@ -1,5 +1,7 @@
 <script>
     import { goto } from '$app/navigation';
+    import { AppBar} from '@skeletonlabs/skeleton';
+
 
     /** @type {import('./$types').LayoutData} */
     export let data;
@@ -21,28 +23,28 @@
         return isAnimator;
     }
 </script>
-{#if profile}
-    <nav>
+<div class="flex flex-col bg-surface-100-800-token p-4">
+    {#if profile}
+    <nav class="profile-nav">
         <ul>
-            {#if isAnimator()}<li><a href="/dashboard">Dashboard</a></li>{/if}
+            {#if isAnimator()}<li><a href="/dashboard" class="btn p-1">Dashboard</a></li>{/if}
             <li>
-                <a href="/account">
-                    <img src={profile.profile_picture} alt="Avatar" width="16px" height="16px" />
+                <a href="/account" class="btn p-1">
+                    <img src={profile.profile_picture} alt="Avatar" />
                     <span>{profile.display_name}</span>
                 </a>
             </li>
-            <li><a href="#" on:click|preventDefault={logout}>Se déconnecter</a></li>
+            <li><a href="#" on:click|preventDefault={logout} class="btn p-1">Se déconnecter</a></li>
         </ul>
     </nav>
-{/if}
+    {/if}
+</div>  
 
 <slot />
 
 <style>
     nav {
         box-sizing: border-box;
-        border: 2px solid green;
-        height: var(--turbo-bar-size);
     }
     ul {
         display: flex;
@@ -53,6 +55,13 @@
 
     li {
         list-style: none;
-        border: 1px solid red;
     }
+
+    a img {
+        width: 24px;
+        height: 24px;
+        aspect-ratio: 1;
+    }
+
+  
 </style>

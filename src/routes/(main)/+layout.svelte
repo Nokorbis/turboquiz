@@ -5,6 +5,9 @@
 	import '@skeletonlabs/skeleton/styles/all.css';
 	// Most of your app wide CSS should be put in this file
 	import '$lib/../app.postcss';
+
+	import { Toast, toastStore } from '@skeletonlabs/skeleton';
 </script>
 
+<Toast></Toast>
 <slot></slot>

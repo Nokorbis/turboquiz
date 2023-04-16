@@ -26,6 +26,6 @@
 <style>
     div {
         margin-inline: auto;
-        max-width: 768px;
+        width: min(38rem, 100% - 1rem);
     }
 </style>
