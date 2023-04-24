@@ -6,8 +6,9 @@
 	// Most of your app wide CSS should be put in this file
 	import '$lib/../app.postcss';
 
-	import { Toast, toastStore } from '@skeletonlabs/skeleton';
+	import { Toast, Modal } from '@skeletonlabs/skeleton';
 </script>
 
+<Modal zIndex="z-[600]"></Modal>
 <Toast></Toast>
 <slot></slot>

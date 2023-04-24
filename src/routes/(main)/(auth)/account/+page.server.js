@@ -3,7 +3,7 @@ import { fail } from "@sveltejs/kit";
 export const actions = {
 
 	updateName: async ({locals: {supabase}, request} ) => {
-        const {displayName, profileId } = await extractIdAndName(request);
+        const {displayName, profileId, themes, hasMicrophone, wantToPlay, cultureLevel } = await extractNewProfile(request);
 
         const session = await supabase.auth.getSession();
         if (!session) {
@@ -17,7 +17,7 @@ export const actions = {
         }
 
         const { data, error} = await supabase.from('profile')
-            .update({ display_name: displayName})
+            .update({ display_name: displayName, themes, has_microphone: hasMicrophone, wants_to_play: wantToPlay, culture_level: cultureLevel})
             .eq('user_id', profileId);
 
         return {displayName, success: true};
@@ -28,14 +28,22 @@ export const actions = {
 /**
  * @param {{ formData: () => any; }} request
  */
-async function extractIdAndName(request) {
+async function extractNewProfile(request) {
     const data = await request.formData();
     const nameData = data.get('display-name');
     const displayName = nameData.trim();
     const profileData = data.get('profile-id');
     const profileId = profileData.trim();
+    const themesData = data.get('themes');
+    const themes = themesData.trim();
+    const wantToPlayData = data.get('want-to-play');
+    const wantToPlay = ['true', 'on'].includes(wantToPlayData);
+    const hasMicrophoneData = data.get('has-microphone');
+    const hasMicrophone = ['true', 'on'].includes(hasMicrophoneData);
+    const cultureLevelData = data.get('culture-level');
+    const cultureLevel = Number.parseInt(cultureLevelData);
 
-    return { displayName, profileId};
+    return { displayName, profileId, themes, wantToPlay, hasMicrophone, cultureLevel};
 }
 
 /**

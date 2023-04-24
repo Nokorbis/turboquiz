@@ -1,4 +1,4 @@
-/** @type {import('./$types').PageLoad} */
+/** @type {import('../$types').PageLoad} */
 export async function load({url, params, parent} ) {
     const gameId = params.id;
 

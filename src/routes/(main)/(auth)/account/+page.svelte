@@ -1,34 +1,47 @@
 <script>
     import { invalidate } from '$app/navigation';
     import { enhance } from '$app/forms';
-    import { toastStore } from '@skeletonlabs/skeleton';
+    import { RangeSlider, toastStore } from '@skeletonlabs/skeleton';
     import AvatarDisplay from '$lib/components/profile/AvatarDisplay.svelte';
 
     /** @type {import('./$types').PageData} */
     export let data;
 
     const MAX_FILE_SIZE = 3 * 1000 * 1000;
+    const cultureLevels = [
+        'Je s\'appelle chaise',
+        '2/5',
+        '3/5',
+        '4/5',
+        'Top 50 Maître des fleurs'
+    ]
 
     const { supabase, profile } = data;
 
     let displayName = profile?.display_name || 'Unknown user';
     let profilePicture = profile?.profile_picture;
+    let themes = profile?.themes ?? '';
+    let hasMicrophone = profile?.has_microphone ?? false;
+    let wantToPlay = profile?.wants_to_play ?? false;
+    let cultureLevel = profile?.culture_level ?? 3;
 
     /**
 	 * @type {HTMLInputElement}
 	 */
     let imageInput;
 
-    let nameSaving = false;
+    let profileSaving = false;
     let pictureSaving = false;
     let pictureSaved = false;
 
     function nameHandling({}) {
         //TODO : debounce
+        profileSaving = true;
         return async ({ result }) => {
             if (result.type === 'success') {
-                toastStore.trigger({ message : 'Nom sauvegardé', background: 'variant-filled-success'});
+                toastStore.trigger({ message : 'Profile sauvegardé', background: 'variant-filled-success'});
             }
+            profileSaving = false;
             invalidate('turbo:profile');
         };
     }
@@ -122,15 +135,50 @@
         <div class="card p-4 variant-glass-primary">
             <form class="form-name" action="?/updateName" method="POST" use:enhance={nameHandling}>
                 <input type="hidden" name="profile-id" value={profile?.user_id} />
-                <label class="label text-left" for="display-name">Nom affiché</label>
-                <input
-                    class="input bg-white"
-                    id="display-name"
-                    name="display-name"
-                    type="text"
-                    bind:value={displayName}
-                />
-                <button class="btn bg-secondary-500 text-white mt-2">Changer le nom</button>
+                <div>
+                    <label class="label text-left" for="display-name">Nom affiché</label>
+                    <input
+                        class="input bg-white text-center"
+                        id="display-name"
+                        name="display-name"
+                        type="text"
+                        bind:value={displayName}
+                    />
+                </div>
+                <div class="mt-2">
+                    <label for="themes" class="label text-left">Idées de thèmes</label>
+                    <input
+                        class="input bg-white text-center"
+                        id="themes"
+                        name="themes"
+                        type="text"
+                        bind:value={themes}>
+                </div>
+                <div class="mt-2">
+                    <RangeSlider name="culture-level" bind:value={cultureLevel} max={5} min={1} step={1} label="Niveau de culture estimé">
+                        <div class="flex justify-between items-center">
+                            <span class="">Niveau de culture estimé</span>
+                            <span>{cultureLevels[cultureLevel-1]}</span>
+                        </div>
+                    </RangeSlider>
+                </div>
+                <div class="flex mt-2 gap-2">
+                    <input type="checkbox" 
+                        name="has-microphone" 
+                        id="has-microphone"
+                        class="checkbox"
+                        bind:checked={hasMicrophone}>
+                    <label for="has-microphone">J'ai un micro</label>
+                </div>
+                <div class="flex mt-2 gap-2">
+                    <input type="checkbox" 
+                        name="want-to-play" 
+                        id="want-to-play"
+                        class="checkbox"
+                        bind:checked={wantToPlay}>
+                    <label for="want-to-play">Je veux jouer prochainement</label>
+                </div>
+                <button class="btn bg-secondary-500 text-white mt-2" disabled={profileSaving}>Mettre à jour</button>
             </form>
         </div>
     </div>
@@ -140,10 +188,6 @@
     .profile-editor {
         max-width: 38rem;
         margin-inline: auto;
-        text-align: center;
-    }
-
-    #display-name {
         text-align: center;
     }
 

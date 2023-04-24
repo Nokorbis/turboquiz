@@ -12,3 +12,7 @@ declare namespace App {
 	  // interface Error {}
 	  // interface Platform {}
 }
+
+declare module '@fortawesome/fontawesome-free/index.es' {
+	export * from '@fortawesome/fontawesome-free';
+  }
