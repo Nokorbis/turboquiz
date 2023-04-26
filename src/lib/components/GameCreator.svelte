@@ -2,7 +2,6 @@
     import { modalStore, toastStore } from '@skeletonlabs/skeleton';
 	import GameSession from "$lib/scripts/models/GameSession";
 
-    
     let gameSession = new GameSession();
 
     function createGameSession() {
