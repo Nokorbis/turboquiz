@@ -6,7 +6,10 @@
 	// Most of your app wide CSS should be put in this file
 	import '$lib/../app.postcss';
 
-	import { Toast, Modal } from '@skeletonlabs/skeleton';
+	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
+	import { Toast, Modal, storePopup } from '@skeletonlabs/skeleton';
+
+	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 </script>
 
 <Modal zIndex="z-[600]"></Modal>

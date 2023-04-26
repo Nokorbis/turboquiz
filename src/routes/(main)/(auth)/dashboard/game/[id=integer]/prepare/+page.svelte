@@ -5,6 +5,7 @@
     import { faUsers, faHourglassHalf, faTableCells, faLandMineOn, faForwardStep } from '@fortawesome/free-solid-svg-icons'; 
 	import PrepareBuzzer from './PrepareBuzzer.svelte';
 	import PreparePlayers from './PreparePlayers.svelte';
+	import PrepareTimed from './PrepareTimed.svelte';
 
     const selectedRail = writable('players');
 
@@ -32,13 +33,12 @@
             {:else}
                 {@const game = games[0]}
                 {#if $selectedRail == 'players'}
-                    <PreparePlayers {supabase} {game} 
-                        existingPlayers$={data.streamed.existingPlayers$}>
-                    </PreparePlayers>
+                    <PreparePlayers {supabase} {game} />
                 {:else if $selectedRail == 'buzzer'}
-                    <PrepareBuzzer></PrepareBuzzer>
+                    <PrepareBuzzer />
+                {:else if $selectedRail == 'timed'}
+                    <PrepareTimed {supabase} {game}/>
                 {/if}
-                
             {/if}
         {/await}
     </div>
