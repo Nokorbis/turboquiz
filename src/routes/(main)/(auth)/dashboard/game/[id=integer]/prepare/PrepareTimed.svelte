@@ -3,6 +3,8 @@
 	import Fa from "svelte-fa/src/fa.svelte";
 	import TimedThemeModal from "./TimedThemeModal.svelte";
 	import { modalStore, toastStore } from "@skeletonlabs/skeleton";
+	import { newTimedTheme } from "$lib/scripts/models/ModelFactory";
+	import { upsertTimedQuestions, upsertTimedTheme } from "$lib/scripts/models/SupabaseHelper";
 
     export let supabase;
     export let game;
@@ -12,22 +14,59 @@
     function loadThemes() {
         return supabase.from('timed_theme')
             .select('id, name, is_mystery, questions:timed_question(*)')
-            .eq('game_id', game.id);
+            .eq('game_id', game.id)
+            .order('name', {ascending: true})
+            .order('points_value', {foreignTable: 'timed_question'})
+            .order('id', {foreignTable: 'timed_question'});
     }
 
     async function saveTheme(response) {
         if (response) {
             console.log({response})
-            const {data: result, error} = await supabase.from('timed_theme')
-                .insert([{user_id: response.user_id, game_key: game.access_key}]);
-
+            let {theme, deletedQuestions} = response;
+            let {theme: dbTheme, error} = await upsertTimedTheme(supabase, game, theme);
             if (error) {
+                console.error(errored);
                 toastStore.trigger({
                     message: error.message,
                     background: 'variant-filled-error'
                 });
             }
             else {
+                if (deletedQuestions) {
+                    supabase.from('timed_question').delete()
+                        .eq('theme_id', dbTheme.id)
+                        .in('id', deletedQuestions.map(q => q.id))
+                        .then((_, error) => {
+                            if (error) {
+                                console.error(error);
+                                toastStore.trigger({
+                                    message: error.message,
+                                    background: 'variant-filled-error'
+                                });
+                            }
+                            else {
+                                console.log('Questions were deleted');
+                            }
+                        })
+                }
+                if (theme.questions) {
+                    const errors = await upsertTimedQuestions(supabase, dbTheme.id, theme.questions);
+                    if (errors.length > 0) {
+                        console.error({errors});
+                        toastStore.trigger({
+                            message: errors.map(e => e.message).join('<br>'),
+                            background: 'variant-filled-error'
+                        });
+                    }
+                    else {
+                        toastStore.trigger({
+                            message: 'Le thème a été enregistré',
+                            background: 'variant-filled-success',
+                            timeout: 2500
+                        });
+                    }
+                }
                 modalStore.close();
                 gameThemes$ = loadThemes();
             }
@@ -40,12 +79,16 @@
         }
     }
 
+    function createNewThemeModal() {
+        openThemeEditorModal(newTimedTheme());
+    }
+
     function openThemeEditorModal(theme) {
         const modalComponent = {
             ref: TimedThemeModal,
             props: {
                 supabase,
-                theme
+                theme: structuredClone(theme)
             }
         };
         modalStore.trigger( {
@@ -58,7 +101,7 @@
 
 <div class="page">
     <div class="card bg-white p-4">
-        <p class="font-bold">Thèmes : <button class="btn-icon btn-icon-sm variant-filled"><Fa icon={faPlus}/></button></p>
+        <p class="font-bold">Thèmes : <button class="btn-icon btn-icon-sm variant-filled" on:click={createNewThemeModal}><Fa icon={faPlus}/></button></p>
         {#await gameThemes$}
             Chargement des thèmes
         {:then {data: gameThemes, error}} 
@@ -72,9 +115,11 @@
                             <span class="badge variant-filled-surface text-base">{theme.questions.length}</span>
                         </div>
                         <div>
+                            {#if theme.is_mystery}
                             <span class="badge-icon" title="Thème mystère">
                                 <Fa icon={faCircleQuestion} color="#f2cb00" scale="2x"/>
                             </span>
+                            {/if}
                         </div>
                         <div>
                             <span class="grow">{theme.name}</span>
