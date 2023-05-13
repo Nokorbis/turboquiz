@@ -13,8 +13,7 @@
     function saveTheme() {
         if ($modalStore[0]?.response) {
             saving = true;
-            $modalStore[0].response({theme, deletedQuestions});
-            saving = false;
+            $modalStore[0].response({theme, deletedQuestions, processEnd: () => saving = false});
         }
     }
 

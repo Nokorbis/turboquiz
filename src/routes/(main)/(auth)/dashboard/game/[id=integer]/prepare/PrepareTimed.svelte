@@ -23,7 +23,7 @@
     async function saveTheme(response) {
         if (response) {
             console.log({response})
-            let {theme, deletedQuestions} = response;
+            let {theme, deletedQuestions, processEnd} = response;
             let {theme: dbTheme, error} = await upsertTimedTheme(supabase, game, theme);
             if (error) {
                 console.error(errored);
@@ -31,6 +31,7 @@
                     message: error.message,
                     background: 'variant-filled-error'
                 });
+                processEnd();
             }
             else {
                 if (deletedQuestions) {
@@ -67,6 +68,7 @@
                         });
                     }
                 }
+                processEnd();
                 modalStore.close();
                 gameThemes$ = loadThemes();
             }
