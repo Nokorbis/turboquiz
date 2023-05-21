@@ -1,21 +1,30 @@
-<script>
+<script lang="ts">
+    import type { PageData } from './$types';
+	import type GameSession from '$lib/scripts/models/GameSession';
+	import { goto } from '$app/navigation';
     import { modalStore, toastStore } from '@skeletonlabs/skeleton';
     import Fa from 'svelte-fa/src/fa.svelte'
     import { faPlus } from '@fortawesome/free-solid-svg-icons'; 
 	import { ProgressRadial } from '@skeletonlabs/skeleton';
 	import GameCreator from '$lib/components/GameCreator.svelte';
-	import { goto } from '$app/navigation';
+    
+    export let data: PageData;
 
-    /** @type {import('./$types').PageData} */
-    export let data;
     const { supabase } = data;
     const games$ = supabase.from('game').select('*').order('game_date', { ascending: false }).limit(10);
 
-    /**
-     * 
-     * @param {import('$lib/scripts/models/GameSession').default} response
-     */
-    async function createGame(response) {
+    async function openGameCreationModal() {
+        const modalComponent = {
+            ref: GameCreator
+        };
+        modalStore.trigger( {
+             type: 'component',
+             component: modalComponent,
+             response: createGame
+        });
+    }
+
+    async function createGame(response: GameSession | null) {
         if (response) {
             const {data: newGameSessions, error} = await supabase.from('game')
                 .insert([{name: response.name, game_date: response.game_date}])
@@ -44,18 +53,8 @@
         }
         
     }
-
-    async function openGameCreationModal() {
-        const modalComponent = {
-            ref: GameCreator
-        };
-        modalStore.trigger( {
-             type: 'component',
-             component: modalComponent,
-             response: createGame
-        });
-    }
 </script>
+
 
 <div class="screen-center">
     {#await games$}

@@ -1,19 +1,15 @@
-<script>
+<script lang="ts">
+	import type { Profile } from "$lib/data/supabase/models";
+	import type { PaginationSettings } from "@skeletonlabs/skeleton/dist/components/Paginator/types";
     import { faHand, faHandMiddleFinger, faMicrophone, faMicrophoneSlash } from "@fortawesome/free-solid-svg-icons";
 	import { Avatar, ListBox, ListBoxItem, Paginator, popup } from "@skeletonlabs/skeleton";
 	import Fa from "svelte-fa/src/fa.svelte";
 
-    /**
-	 * @type {any[]}
-	 */
-    export let players;
-    /**
-	 * @type {any}
-	 */
-     export let selectedPlayer;
+    export let players: Profile[];
+    export let selectedPlayer: Profile | null;
 
     let textFilter = '';
-    let settings = {
+    let settings: PaginationSettings = {
         offset: 0,
         limit: 10,
         size: 0,
@@ -24,11 +20,7 @@
     $: { settings.size = filteredPlayers.length };
     $: availablePlayers = sortPlayers(settings, filteredPlayers);
 
-    /**
-     * @param {any[]} players
-     * @param {string} textFilter
-     */
-    function filterPlayers(players, textFilter) {
+    function filterPlayers(players: Profile[], textFilter: string): Profile[] {
         textFilter = textFilter.trim().toLowerCase();
         const filteredPlayers = players.filter(p => {
             return p.display_name.toLowerCase().includes(textFilter) || p.themes.toLowerCase().includes(textFilter);
@@ -37,16 +29,11 @@
         return filteredPlayers;
     }
 
-    /**
-     * @param settings
-     * @param {any[]} players
-     */
-    function sortPlayers(settings, players) {
+    function sortPlayers(settings: PaginationSettings, players: Profile[]): Profile[] {
         const sortedPlayers = players;
         const pagePlayers = sortedPlayers.slice(settings.offset, settings.offset + settings.limit);
         return pagePlayers;
     }
-
 
 </script>
 

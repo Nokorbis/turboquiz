@@ -1,14 +1,16 @@
-<script>
+<script lang="ts">
 	import { tick } from "svelte";
     import { modalStore } from "@skeletonlabs/skeleton";
 	import { faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa/src/fa.svelte";
-	import { newTimedQuestion } from "$lib/scripts/models/ModelFactory";
+	import { newTimedQuestion } from "$lib/scripts/ModelFactory";
+	import type { Database } from "$lib/data/supabase/types";
+	import type { TimedQuestion, TimedQuestionU, TimedThemeWithQuestionsU } from "$lib/data/supabase/models";
 
-    export let theme;
+    export let theme: TimedThemeWithQuestionsU;
     let saving = false;
-    let deletedQuestions = [];
-    let scrollablePane;
+    let deletedQuestions: TimedQuestion[] = [];
+    let scrollablePane: HTMLDivElement;
 
     function saveTheme() {
         if ($modalStore[0]?.response) {
@@ -26,7 +28,7 @@
         });   
     }
 
-    function deleteQuestion(index) {
+    function deleteQuestion(index: number) {
         let qs = [...theme.questions];
         let oldQuestion = qs[index];
         if (oldQuestion) {
@@ -38,7 +40,7 @@
                     ...deletedQuestions.filter((dq) => {
                         return dq.id != oldQuestion.id
                     }),
-                    oldQuestion
+                    oldQuestion as TimedQuestion
                 ];
             }
             theme.questions = qs;

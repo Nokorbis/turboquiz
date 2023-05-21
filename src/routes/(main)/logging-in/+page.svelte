@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
+	import type { PageData } from './$types';
 
-    /** @type {import('./$types').PageData} */
-    export let data;
+    export let data: PageData;
 
     $: {
         const redirectTo = $page.url.searchParams.get('redirect');

@@ -1,10 +1,11 @@
+import type { PageLoad } from './$types';
+
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { redirect } from '@sveltejs/kit';
 
-/** @type {import('./$types').PageLoad} */
-export async function load({ url, parent }) {
-    const {supabase, session} = await parent();
+export const load = (async ({url, parent}) => {
+    const {session} = await parent();
 
     // if the user is not logged in return them to the login page
 	if (!session) {
@@ -31,4 +32,4 @@ export async function load({ url, parent }) {
 	}
 
 	return { url: url.origin };
-};
+}) satisfies PageLoad;

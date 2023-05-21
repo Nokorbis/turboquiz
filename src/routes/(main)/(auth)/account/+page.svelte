@@ -1,11 +1,10 @@
-<script>
+<script lang="ts">
+    import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
     import { enhance } from '$app/forms';
     import { RangeSlider, toastStore } from '@skeletonlabs/skeleton';
     import AvatarDisplay from '$lib/components/profile/AvatarDisplay.svelte';
-
-    /** @type {import('./$types').PageData} */
-    export let data;
+	import type { ActionResult, SubmitFunction } from '@sveltejs/kit';
 
     const MAX_FILE_SIZE = 3 * 1000 * 1000;
     const cultureLevels = [
@@ -15,27 +14,25 @@
         '4/5',
         'Top 50 Maître des fleurs'
     ]
+    
+    export let data: PageData;
 
     const { supabase, profile } = data;
 
-    let displayName = profile?.display_name || 'Unknown user';
-    let profilePicture = profile?.profile_picture;
-    let themes = profile?.themes ?? '';
-    let hasMicrophone = profile?.has_microphone ?? false;
-    let wantToPlay = profile?.wants_to_play ?? false;
-    let cultureLevel = profile?.culture_level ?? 3;
+    let displayName = profile.display_name || 'Unknown user';
+    let profilePicture = profile.profile_picture;
+    let themes = profile.themes ?? '';
+    let hasMicrophone = profile.has_microphone ?? false;
+    let wantToPlay = profile.wants_to_play ?? false;
+    let cultureLevel = profile.culture_level ?? 3;
 
-    /**
-	 * @type {HTMLInputElement}
-	 */
-    let imageInput;
+    let imageInput: HTMLInputElement;
 
     let profileSaving = false;
     let pictureSaving = false;
     let pictureSaved = false;
 
-    function nameHandling({}) {
-        //TODO : debounce
+    const nameHandling = (() => {
         profileSaving = true;
         return async ({ result }) => {
             if (result.type === 'success') {
@@ -44,17 +41,14 @@
             profileSaving = false;
             invalidate('turbo:profile');
         };
-    }
 
-    function triggerImageSelection() {
-        imageInput.click();
-    }
-    
-    async function avatarHandling(event) {
+    }) satisfies SubmitFunction<any, any>;
+
+    async function avatarHandling(event: Event & { currentTarget: EventTarget & HTMLInputElement; }) {
         pictureSaving = true;
         pictureSaved = false;
-        const input = event.target;
-        const selectedFiles = input.files;
+        const input = event.currentTarget;
+        const selectedFiles = input?.files;
         if (!selectedFiles || selectedFiles.length == 0) {
             return;
         }
@@ -72,7 +66,7 @@
         }
     }
 
-    async function handleAvatarFile(file) {
+    async function handleAvatarFile(file: File) {
         if (!profile) {
             throw new Error("Vous n'avez aucun profile en cours");
         }
@@ -112,6 +106,7 @@
         profilePicture = url;
         pictureSaved = true;
     }
+    
 </script>
 
 <div class="screen-center">
@@ -120,7 +115,7 @@
             <!-- <Avatar src={profilePicture} rounded="rounded-full" width="w-64 mx-auto" border="border-[1rem] border-orange-500"></Avatar> -->
             <AvatarDisplay imageUrl={profilePicture} />
             <div class="text-center mt-3">
-                <button class="btn bg-secondary-500 text-white" on:click={triggerImageSelection}>Changer l'image</button>
+                <button class="btn bg-secondary-500 text-white" on:click={() => imageInput.click()}>Changer l'image</button>
             </div>
             <input
                 bind:this={imageInput}
@@ -190,5 +185,4 @@
         margin-inline: auto;
         text-align: center;
     }
-
 </style>

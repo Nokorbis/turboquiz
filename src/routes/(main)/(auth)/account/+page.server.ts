@@ -1,5 +1,6 @@
 import { fail } from "@sveltejs/kit";
 
+
 export const actions = {
 
 	updateName: async ({locals: {supabase}, request} ) => {
@@ -10,7 +11,7 @@ export const actions = {
             return fail(401, {displayName});
         }
         
-        const errors = checkUpdateErrors( profileId, displayName);
+        const errors = checkUpdateErrors(profileId, displayName);
 
         if (errors.length > 0) {
             return fail(400, {displayName, errors});
@@ -25,32 +26,25 @@ export const actions = {
 	
 };
 
-/**
- * @param {{ formData: () => any; }} request
- */
-async function extractNewProfile(request) {
+async function extractNewProfile(request: Request) {
     const data = await request.formData();
-    const nameData = data.get('display-name');
+    const nameData = String(data.get('display-name'));
     const displayName = nameData.trim();
-    const profileData = data.get('profile-id');
+    const profileData = String(data.get('profile-id'));
     const profileId = profileData.trim();
-    const themesData = data.get('themes');
+    const themesData = String(data.get('themes'));
     const themes = themesData.trim();
-    const wantToPlayData = data.get('want-to-play');
+    const wantToPlayData = String(data.get('want-to-play'));
     const wantToPlay = ['true', 'on'].includes(wantToPlayData);
-    const hasMicrophoneData = data.get('has-microphone');
+    const hasMicrophoneData = String(data.get('has-microphone'));
     const hasMicrophone = ['true', 'on'].includes(hasMicrophoneData);
-    const cultureLevelData = data.get('culture-level');
+    const cultureLevelData = String(data.get('culture-level'));
     const cultureLevel = Number.parseInt(cultureLevelData);
 
     return { displayName, profileId, themes, wantToPlay, hasMicrophone, cultureLevel};
 }
 
-/**
- * @param {string} profileId
- * @param {string} displayName
- */
-function checkUpdateErrors(profileId, displayName) {
+function checkUpdateErrors(profileId: string, displayName: string) : string[] {
     const errors = [];
     if (!displayName) {
         errors.push('invalid-name');

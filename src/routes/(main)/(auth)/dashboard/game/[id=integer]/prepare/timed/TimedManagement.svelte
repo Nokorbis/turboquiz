@@ -1,13 +1,16 @@
-<script>
+<script lang="ts">
 	import { faCircleQuestion, faPlus } from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa/src/fa.svelte";
 	import TimedThemeModal from "./TimedThemeModal.svelte";
 	import { modalStore, toastStore } from "@skeletonlabs/skeleton";
-	import { newTimedTheme } from "$lib/scripts/models/ModelFactory";
-	import { upsertTimedQuestions, upsertTimedTheme } from "$lib/scripts/models/SupabaseHelper";
+	import { newTimedTheme } from "$lib/scripts/ModelFactory";
+	import { upsertTimedQuestions, upsertTimedTheme } from "$lib/scripts/SupabaseHelper";
+	import type { SupabaseClient } from "@supabase/supabase-js";
+	import type { Database } from "$lib/data/supabase/types";
+	import type { Game, TimedQuestion, TimedThemeWithQuestions, TimedThemeWithQuestionsU } from "$lib/data/supabase/models";
 
-    export let supabase;
-    export let game;
+    export let supabase: SupabaseClient<Database>;
+    export let game: Game;
 
     let gameThemes$ = loadThemes();
 
@@ -20,13 +23,14 @@
             .order('id', {foreignTable: 'timed_question'});
     }
 
-    async function saveTheme(response) {
+    type ModalResult = {theme: TimedThemeWithQuestions, deletedQuestions: TimedQuestion[], processEnd: Function}
+    async function saveTheme(response: ModalResult) {
         if (response) {
             console.log({response})
             let {theme, deletedQuestions, processEnd} = response;
             let {theme: dbTheme, error} = await upsertTimedTheme(supabase, game, theme);
             if (error) {
-                console.error(errored);
+                console.error(error);
                 toastStore.trigger({
                     message: error.message,
                     background: 'variant-filled-error'
@@ -36,9 +40,9 @@
             else {
                 if (deletedQuestions) {
                     supabase.from('timed_question').delete()
-                        .eq('theme_id', dbTheme.id)
+                        .eq('theme_id', dbTheme!.id)
                         .in('id', deletedQuestions.map(q => q.id))
-                        .then((_, error) => {
+                        .then(({data: _, error}) => {
                             if (error) {
                                 console.error(error);
                                 toastStore.trigger({
@@ -52,7 +56,7 @@
                         })
                 }
                 if (theme.questions) {
-                    const errors = await upsertTimedQuestions(supabase, dbTheme.id, theme.questions);
+                    const errors = await upsertTimedQuestions(supabase, dbTheme!.id, theme.questions);
                     if (errors.length > 0) {
                         console.error({errors});
                         toastStore.trigger({
@@ -85,7 +89,7 @@
         openThemeEditorModal(newTimedTheme());
     }
 
-    function openThemeEditorModal(theme) {
+    function openThemeEditorModal(theme: TimedThemeWithQuestionsU) {
         const modalComponent = {
             ref: TimedThemeModal,
             props: {
@@ -119,7 +123,7 @@
                         <div>
                             {#if theme.is_mystery}
                             <span class="badge-icon" title="Thème mystère">
-                                <Fa icon={faCircleQuestion} color="#f2cb00" scale="2x"/>
+                                <Fa icon={faCircleQuestion} color="#f2cb00" size="2x"/>
                             </span>
                             {/if}
                         </div>

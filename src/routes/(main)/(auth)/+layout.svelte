@@ -1,10 +1,9 @@
-<script>
+<script lang="ts">
+    import type { LayoutData } from './$types';
     import { goto } from '$app/navigation';
     import { AppShell} from '@skeletonlabs/skeleton';
-
-
-    /** @type {import('./$types').LayoutData} */
-    export let data;
+    
+    export let data: LayoutData;
 
     $: ({ supabase, session, profile } = data);
 
@@ -23,6 +22,7 @@
         return isAnimator;
     }
 </script>
+
 <AppShell>
     <svelte:fragment slot="header">
 		<div class="flex flex-col bg-surface-100-800-token p-4">
@@ -45,9 +45,6 @@
     <slot />
 </AppShell>
 
-
-
-
 <style>
     nav {
         box-sizing: border-box;
@@ -55,7 +52,7 @@
     ul {
         display: flex;
         gap: 1rem;
-        justify-content: end;
+        justify-content: flex-end;
         margin-right: 1rem;
     }
 
@@ -68,6 +65,4 @@
         height: 24px;
         aspect-ratio: 1;
     }
-
-  
 </style>

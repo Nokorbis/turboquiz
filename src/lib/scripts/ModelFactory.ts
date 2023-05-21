@@ -1,4 +1,6 @@
-export function newTimedQuestion() {
+import type { TimedQuestion, TimedQuestionU, TimedThemeWithQuestions, TimedThemeWithQuestionsU } from "$lib/data/supabase/models";
+
+export function newTimedQuestion(): TimedQuestionU {
     return {
         statement: '',
         answer: '',
@@ -6,7 +8,7 @@ export function newTimedQuestion() {
     };
 }
 
-export function newTimedTheme() {
+export function newTimedTheme(): TimedThemeWithQuestionsU {
     return {
         name: '',
         is_mystery: false,

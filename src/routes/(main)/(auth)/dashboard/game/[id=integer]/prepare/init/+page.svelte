@@ -3,5 +3,4 @@
     
     export let data: PageData;
 </script>
-
-Play
+<p>Hihi</p>

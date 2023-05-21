@@ -1,12 +1,15 @@
-<script>
+<script lang="ts">
+	import type { SupabaseClient } from "@supabase/supabase-js";
+	import type { Database } from "$lib/data/supabase/types";
+	import type { Profile } from "$lib/data/supabase/models";
 	import { modalStore } from "@skeletonlabs/skeleton";
 	import PlayerList from "./PlayerList.svelte";
 
-    export let supabase;
-    export let alreadyParticipatingPlayers = [];
+    export let supabase: SupabaseClient<Database>;
+    export let alreadyParticipatingPlayers: Profile[] = [];
 
     let existingPlayers$ = supabase.from('profile').select('*');
-    let selectedPlayer = null;
+    let selectedPlayer: Profile | null  = null;
 
     function selectPlayer() {
         if ($modalStore[0]?.response) {
@@ -19,7 +22,7 @@
     {#await existingPlayers$}
         Chargement des joueurs...
     {:then {data: existingPlayers, error}} 
-        {#if error}
+        {#if error || !existingPlayers}
             Une erreur est survenue lors du chargement des joueurs
         {:else}
             <PlayerList players={existingPlayers} bind:selectedPlayer={selectedPlayer} />

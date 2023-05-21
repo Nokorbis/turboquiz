@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { modalStore, toastStore } from '@skeletonlabs/skeleton';
 	import GameSession from "$lib/scripts/models/GameSession";
 
@@ -14,7 +14,7 @@
                 alert('Une erreur est survenue avec $modalStore[0].response');
             }
         }
-        catch (error) {
+        catch (error: any) {
             toastStore.trigger( {
                 message: error.message,
                 timeout: 2000,
