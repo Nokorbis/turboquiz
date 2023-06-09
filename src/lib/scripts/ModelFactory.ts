@@ -1,4 +1,4 @@
-import type { TimedQuestion, TimedQuestionU, TimedThemeWithQuestions, TimedThemeWithQuestionsU } from "$lib/data/supabase/models";
+import type { GridQuestionU, GridThemeWithQuestionsU, TimedQuestion, TimedQuestionU, TimedThemeWithQuestions, TimedThemeWithQuestionsU } from "$lib/data/supabase/models";
 
 export function newTimedQuestion(): TimedQuestionU {
     return {
@@ -18,6 +18,29 @@ export function newTimedTheme(): TimedThemeWithQuestionsU {
             newTimedQuestion(),
             newTimedQuestion(),
             newTimedQuestion()
+        ]
+    };
+}
+
+export function newGridQuestion(): GridQuestionU {
+    return {
+        statement: '',
+        answer: '',
+        points_value: 5
+    };
+}
+
+export function newGridTheme(): GridThemeWithQuestionsU {
+    return {
+        name: '',
+        owner_id:  null,
+        color: '#2d3142',
+        questions: [
+            newGridQuestion(),
+            newGridQuestion(),
+            newGridQuestion(),
+            newGridQuestion(),
+            newGridQuestion()
         ]
     };
 }

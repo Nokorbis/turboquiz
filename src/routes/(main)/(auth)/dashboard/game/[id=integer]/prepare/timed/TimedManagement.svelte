@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { faCircleQuestion, faPlus } from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa/src/fa.svelte";
-	import TimedThemeModal from "./TimedThemeModal.svelte";
+	import ModalThemeTimed from "./ModalThemeTimed.svelte";
 	import { modalStore, toastStore } from "@skeletonlabs/skeleton";
 	import { newTimedTheme } from "$lib/scripts/ModelFactory";
 	import { upsertTimedQuestions, upsertTimedTheme } from "$lib/scripts/SupabaseHelper";
@@ -91,7 +91,7 @@
 
     function openThemeEditorModal(theme: TimedThemeWithQuestionsU) {
         const modalComponent = {
-            ref: TimedThemeModal,
+            ref: ModalThemeTimed,
             props: {
                 supabase,
                 theme: structuredClone(theme)

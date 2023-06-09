@@ -11,6 +11,8 @@ export type GameU = Database['public']['Tables']['game']['Update'];
 export type GamePlayer = Database['public']['Tables']['game_player']['Row'];
 export type GamePlayerU = Database['public']['Tables']['game_player']['Update'];
 
+export type GamePlayerWithProfile = GamePlayer & { profile: Profile };
+
 
 export type GridGame = Database['public']['Tables']['grid_game']['Row'];
 export type GridGameU = Database['public']['Tables']['grid_game']['Update'];
@@ -18,6 +20,9 @@ export type GridTheme = Database['public']['Tables']['grid_theme']['Row'];
 export type GridThemeU = Database['public']['Tables']['grid_theme']['Update'];
 export type GridQuestion = Database['public']['Tables']['grid_question']['Row'];
 export type GridQuestionU = Database['public']['Tables']['grid_question']['Update'];
+
+export type GridThemeWithQuestions = GridTheme & { questions: GridQuestion[]};
+export type GridThemeWithQuestionsU = GridThemeU & { questions: GridQuestionU[]};
 
 
 export type TimedTheme = Database['public']['Tables']['timed_theme']['Row'];

@@ -1,34 +1,66 @@
 <script lang="ts">
-	import type { GridGame } from "$lib/data/supabase/models";
+	import type { Game, GridGame } from "$lib/data/supabase/models";
+	import type { SupabaseClient } from "@supabase/supabase-js";
+	import type { Database } from "$lib/data/supabase/types";
+	import { toastStore } from "@skeletonlabs/skeleton";
+	import GridGameSettingsEditor from "./GridGameSettingsEditor.svelte";
 
-    export let gridGame: GridGame;
-    const personalExplain = 'Points remportés lorsqu\'on répond à une question de son propre thème';
-    const opponentExplain = 'Points remportés lorsqu\'on répond à une question d\'un thème adverse';
+    export let supabase: SupabaseClient<Database>;
+    export let game: Game;
+
+    let gridGame$ = loadGridGame();
+
+    function loadGridGame() {
+        return supabase.from('grid_game')
+            .select('*')
+            .eq('id', game.id)
+            .limit(1).single();
+    }
+
+    // function slowLoadGridGame() {
+    //     return new Promise((resolve, reject) => {
+    //         setTimeout(() => {
+    //             loadGridGame().then(resolve)
+    //         }, 10000);
+    //     });
+        
+    // }
+
+    async function onSave(event: CustomEvent<{data: {game: GridGame}}>) {
+        const gridGame = event.detail.data.game;
+        const {data, error} = await supabase.from('grid_game')
+                .update({points_theme_self: gridGame.points_theme_self, 
+                        points_theme_others: gridGame.points_theme_others})
+                .eq('id', gridGame.id);
+
+        if (error) {
+            toastStore.trigger({
+                message: error.message
+            });
+        }
+        gridGame$ = loadGridGame();
+    }
+
+    
+
 </script>
 
-<div class="card bg-white p-4">
-    <div class="grid 
-    md:grid-cols-[max-content_1fr]
-    lg:grid-cols-[max-content_1fr_max-content_1fr_max-content] 
-    items-center gap-4">
-        <div class="md:text-right">
-            <label for="personal-points-value" title={personalExplain}>Points personnels : </label>
+{#await gridGame$}
+    <div class="card bg-white p-4">
+        <div class="grid grid-cols-[1fr_1fr_1fr_1fr_1fr] gap-1">
+            <div class="placeholder animate-pulse"></div>
+            <div class="placeholder animate-pulse"></div>
+            <div class="placeholder animate-pulse"></div>
+            <div class="placeholder animate-pulse"></div>
+            <div class="placeholder animate-pulse"></div>
         </div>
-        <div>
-            <input type="number" class="input" id="personal-points-value"
-            min="0" max="999" step="1"
-            value={gridGame.points_theme_self}
-            title={personalExplain}>
-        </div>
-        <div class="md:text-right">
-            <label for="opponents-points-value" title={opponentExplain}>Points ennemis :</label>
-        </div>
-        <div>
-            <input type="number" class="input" id="opponents-points-value" 
-            min="0" max="999" step="1"
-            value={gridGame.points_theme_others}
-            title={opponentExplain}>
-        </div>
-        <div class="md:col-span-2 lg:col-span-1 text-right"><button class="btn variant-filled-primary">Sauvegarder</button></div>
     </div>
-</div>
+{:then {data: gridGame, error}}
+    {#if error || !gridGame}
+        Une erreur est survenue lors du chargement de la configuration
+    {:else}
+        <GridGameSettingsEditor {gridGame} on:save={onSave}/>
+    {/if}
+{/await}
+
+
