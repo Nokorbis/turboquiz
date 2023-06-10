@@ -16,6 +16,7 @@
 
 <div class="card bg-white p-4">
     <div class="grid 
+    grid-cols-[1fr]
     md:grid-cols-[max-content_1fr]
     lg:grid-cols-[max-content_1fr_max-content_1fr_max-content] 
     items-center gap-4">
@@ -37,7 +38,7 @@
             value={gridGame.points_theme_others}
             title={opponentExplain}>
         </div>
-        <div class="md:col-span-2 lg:col-span-1 text-right">
+        <div class="col-span-1 md:col-span-2 lg:col-span-1 text-right">
             <button class="btn variant-filled-primary" on:click={save}>Sauvegarder</button>
         </div>
     </div>

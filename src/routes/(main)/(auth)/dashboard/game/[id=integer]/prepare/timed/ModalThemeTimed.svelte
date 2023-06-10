@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tick } from "svelte";
-    import { modalStore } from "@skeletonlabs/skeleton";
+    import { modalStore, toastStore } from "@skeletonlabs/skeleton";
 	import { faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa/src/fa.svelte";
 	import { newTimedQuestion } from "$lib/scripts/ModelFactory";
@@ -14,8 +14,20 @@
 
     function saveTheme() {
         if ($modalStore[0]?.response) {
-            saving = true;
-            $modalStore[0].response({theme, deletedQuestions, processEnd: () => saving = false});
+            try {
+                validate();
+                saving = true;
+                cleanTheme();
+                $modalStore[0].response({theme, deletedQuestions, processEnd: () => saving = false});
+            } 
+            catch (e: any) {
+                console.error(e);
+                toastStore.trigger({
+                    message: e.message,
+                    background: 'variant-filled-error'
+                });
+            }
+            
         }
     }
 
@@ -26,6 +38,37 @@
         tick().then(() => {
             scrollablePane.scrollTop = scrollablePane.scrollTopMax || scrollablePane.scrollHeight;
         });   
+    }
+
+    function validate() {
+        theme.name = theme.name?.trim();
+        if (!theme.name) {
+            throw new Error("Le nom du thème est obligatoire");
+        }
+
+        theme.questions.forEach((q, i) => {
+            q.statement = q.statement?.trim();
+            q.answer = q.answer?.trim();
+            if (!q.statement && q.answer) {
+                throw new Error(`La question ${i+1} ne peut pas être vide`);
+            }
+            if (!q.answer && q.statement) {
+                throw new Error(`La réponse de la question ${i+1} ne peut pas être vide`);
+            }
+        });
+    }
+
+    function cleanTheme() {
+        let toDelete: number[] = [];
+        theme.questions.forEach((q, i) => {
+            if (!q.statement && !q.answer) {
+                toDelete.push(i);
+            }
+        });
+        toDelete.sort((a, b) => {
+            return b - a;
+        });
+        toDelete.forEach(deleteQuestion);
     }
 
     function deleteQuestion(index: number) {
@@ -49,7 +92,7 @@
     }
 </script>
 
-<div class="card bg-white p-4 h-[calc(100%-4rem)] w-[64rem]">
+<div class="card bg-white p-4 h-[calc(100%-2rem)] sm:h-[calc(100%-4rem)] w-[64rem]">
     <div class="flex flex-col h-full gap-2">
         <div class="grid grid-cols-[max-content_3fr_max-content_max-content] gap-2 items-center">
             <label class="label" for="theme-name">Nom : </label>

@@ -26,8 +26,8 @@
         if ($modalStore[0]?.response) {
             try {
                 validate();
-                cleanTheme();
                 saving = true;
+                cleanTheme();
                 $modalStore[0].response({theme, deletedQuestions, processEnd: () => saving = false});
             }
             catch (error: any) {
@@ -116,20 +116,24 @@
     const tooltipPoints = `Nombre de points gagnés pour chaque question de ce thème`;
 </script>
 
-<div class="card bg-white p-4 h-[calc(100%-4rem)] w-[64rem]">
+<div class="card bg-white p-4 h-[calc(100%-2rem)] sm:h-[calc(100%-4rem)] w-[64rem]">
     <div class="flex flex-col h-full gap-2">
-        <div class="grid grid-cols-[max-content_max-content_max-content_3fr] gap-2 items-center">
+        <div class="grid gap-2 items-center
+            grid-cols-[max-content_1fr]
+            sm:grid-cols-[max-content_max-content_max-content_3fr] ">
             <label for="mystery-theme">Couleur : </label>
             <input class="input" type="color" bind:value={theme.color}>
             <label class="label" for="theme-name">Nom : </label>
             <input id="theme-name" type="text" class="input" bind:value={theme.name}>
         </div>
-        <div class="grid grid-cols-[max-content_max-content_1fr] gap-2 items-center h-[3rem]">
+        <div class="grid gap-2 items-center sm:h-[3rem]
+            grid-cols-[1fr]
+            sm:grid-cols-[max-content_max-content_1fr] ">
             <div>
                 <label for="is-player-theme" class="label">Thème joueur : </label>
                 <input type="checkbox" id="is-player-theme" class="checkbox" bind:checked={isPlayerTheme} on:change={onPlayerModeChange}>
             </div>
-            <div class="divider-vertical"></div>
+            <div class="hidden sm:divider-vertical"></div>
             {#if isPlayerTheme}
                 <div>
                     <select name="" id="" class="select" bind:value={theme.owner_id}>
@@ -145,7 +149,7 @@
                 </div>
             {/if}
         </div>
-        <div class="">
+        <div>
             <span class="text-lg">Questions : ({theme.questions.length})</span>
             <button class="btn-icon btn-icon-sm variant-filled" on:click={addQuestion}><Fa icon={faPlus}/></button>
         </div>

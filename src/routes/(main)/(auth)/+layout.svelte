@@ -28,12 +28,12 @@
 		<div class="flex flex-col bg-surface-100-800-token p-4">
             {#if profile}
             <nav class="profile-nav">
-                <ul>
-                    {#if isAnimator()}<li><a href="/dashboard" class="btn p-1">Dashboard</a></li>{/if}
+                <ul class="">
+                    {#if isAnimator()}<li><a href="/dashboard" class="btn p-1 ">Dashboard</a></li>{/if}
                     <li>
                         <a href="/account" class="btn p-1">
                             <img src={profile.profile_picture} alt="Avatar" />
-                            <span>{profile.display_name}</span>
+                            <span class="">{profile.display_name}</span>
                         </a>
                     </li>
                     <li><a href="#" on:click|preventDefault={logout} class="btn p-1">Se déconnecter</a></li>
@@ -60,6 +60,13 @@
         list-style: none;
     }
 
+    @media (max-width: 400px) {
+        ul > li > a{
+            font-size: 0.75rem;
+        }
+    }
+
+    
     a img {
         width: 24px;
         height: 24px;

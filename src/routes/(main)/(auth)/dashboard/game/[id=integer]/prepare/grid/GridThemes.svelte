@@ -143,13 +143,16 @@
         Une erreur est survenue lors des thèmes
     {:else}
         <p class="font-bold">Thèmes : <button class="btn-icon btn-icon-sm variant-filled" on:click={createNewThemeModal}><Fa icon={faPlus}/></button></p>
-        <div class="mt-2 grid gap-1 grid-cols-[1fr_1fr]">
+        <div class="mt-2 grid gap-1 grid-cols-[1fr] sm:grid-cols-[1fr_1fr]">
             {#each themes as theme}
             {@const questionsCount = theme.questions?.length ?? 0}
                 <div class="card p-4 cursor-pointer" on:click={() => openThemeEditorModal(theme)}>
-                    <p class="font-bold grid grid-cols-[max-content_max-content_max-content_max-content_1fr] gap-2 items-center">
+                    <p class="font-bold grid items-center
+                    grid-cols-[max-content_max-content_max-content_1fr]
+                    sm:grid-cols-[max-content_max-content_max-content_max-content_1fr] 
+                    gap-1 sm:gap-2">
                         <span class="badge-icon inline-flex variant-filled-error p-3" on:click|stopPropagation={() => deleteTheme(theme)}><Fa icon={faTrash}/></span>
-                        <span class="inline-block theme-color w-[24px] h-[24px] rounded-full" title="Couleur du thème" style="--theme-color:{theme.color}"></span>
+                        <span class="hidden sm:block theme-color w-[24px] h-[24px] rounded-full" title="Couleur du thème" style="--theme-color:{theme.color}"></span>
                         {#if theme.owner_id}
                             <span class="badge-icon variant-filled p-3" title="Thème joueur"><Fa icon={faUser}/></span>
                         {:else}
@@ -157,7 +160,7 @@
                             <span class="badge variant-filled" title="{questionsPoints} points">{ questionsPoints }</span>
                         {/if}
                         <span title="{questionsCount} questions" class="badge variant-ghost-tertiary">{questionsCount}</span>
-                        <span class="text-lg truncate">{theme.name}</span>
+                        <span class="text-lg truncate text-ellipsis">{theme.name}</span>
                     </p>
                 </div>
             {/each}
