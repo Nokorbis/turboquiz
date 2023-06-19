@@ -4,7 +4,7 @@
 	import type { SupabaseClient } from "@supabase/supabase-js";
     import { loadGridPlayersAndThemes, type PlayerWithThemes } from "$lib/scripts/GameChecker";
 	import Fa from "svelte-fa/src/fa.svelte";
-	import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+	import { faSquareCheck, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 
     export let supabase: SupabaseClient<Database>;
     export let game: Game;
@@ -27,7 +27,12 @@
         {#if error || !gridPlayersAndThemes}
             Une erreur est survenue durant le chargement des joueurs
         {:else}
-            {#if !allPlayersHaveSameThemesCount(gridPlayersAndThemes)}
+            {#if allPlayersHaveSameThemesCount(gridPlayersAndThemes)}
+            <p class="text-green-500">
+                <span class="badge-icon inline-flex"><Fa icon={faSquareCheck}/></span>
+                <span>Les joueurs ont tous le même nombre de thèmes</span>
+            </p>
+            {:else}
             <p class="text-amber-500">
                 <span class="badge-icon inline-flex"><Fa icon={faTriangleExclamation}/></span>
                 <span>Les joueurs n'ont pas tous le même nombre de thèmes</span>
