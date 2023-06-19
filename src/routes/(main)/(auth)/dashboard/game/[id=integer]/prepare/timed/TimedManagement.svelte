@@ -116,7 +116,7 @@
             {:else}
             <ul class="grid grid-cols-[max-content_max-content_1fr] gap-2 items-center text-lg mt-2">
                 {#each gameThemes as theme}
-                    <li class="contents cursor-pointer" on:click={() => openThemeEditorModal(theme)}>
+                    <li class="contents cursor-pointer card" on:click={() => openThemeEditorModal(theme)}>
                         <div class="justify-self-end">
                             <span class="badge variant-filled-surface text-base">{theme.questions.length}</span>
                         </div>

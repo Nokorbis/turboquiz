@@ -33,3 +33,5 @@ export type TimedQuestionU = Database['public']['Tables']['timed_question']['Upd
 export type TimedThemeWithQuestions = TimedTheme & { questions: TimedQuestion[]};
 export type TimedThemeWithQuestionsU = TimedThemeU & { questions: TimedQuestionU[]};
 
+export type PlayerWithTheme = Database['public']['Views']['v_themes_by_players']['Row'];
+
