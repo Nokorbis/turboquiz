@@ -2,9 +2,10 @@
 	import GameLoader from '../GameLoader.svelte';
     import type { PageData } from './$types';
 	import GameChecker from './GameChecker.svelte';
+	import UrlList from './UrlList.svelte';
     
     export let data: PageData;
-    let { supabase } = data;
+    let { supabase, baseUrl } = data;
 
 </script>
 <div class="page">
@@ -14,6 +15,7 @@
     let:game={game}
     >
     {#if game}
+        <UrlList {baseUrl} {game} />
         <GameChecker {supabase} {game} />
     {/if}
 </GameLoader>

@@ -3,7 +3,7 @@
 	import type { Database } from "$lib/data/supabase/types";
 	import type { SupabaseClient } from "@supabase/supabase-js";
     import { loadGridPlayersAndThemes, type PlayerWithThemes } from "$lib/scripts/GameChecker";
-	import Fa from "svelte-fa/src/fa.svelte";
+	import Fa from "svelte-fa";
 	import { faSquareCheck, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 
     export let supabase: SupabaseClient<Database>;
