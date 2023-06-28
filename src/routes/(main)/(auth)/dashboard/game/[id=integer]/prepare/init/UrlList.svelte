@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Game } from "$lib/data/supabase/models";
+	import { toastStore } from "@skeletonlabs/skeleton";
 
     export let baseUrl: string;
     export let game: Game;
@@ -10,6 +11,11 @@
 
     function copyUrl(url: string) {
         navigator.clipboard.writeText(url);
+        toastStore.trigger({
+            message: `URL copiée`,
+            background: "variant-filled-success",
+            timeout: 1000
+        });
     }
 
 </script>

@@ -9,6 +9,7 @@
     let { supabase, baseUrl } = data;
 
 </script>
+
 <div class="page">
 <GameLoader 
     {supabase} 
@@ -21,8 +22,6 @@
         <GameChecker {supabase} {game} />
     {/if}
 </GameLoader>
-
-    
 </div>
 
 <style>

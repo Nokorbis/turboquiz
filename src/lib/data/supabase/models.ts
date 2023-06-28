@@ -24,6 +24,7 @@ export type GridQuestionU = Database['public']['Tables']['grid_question']['Updat
 export type GridThemeWithQuestions = GridTheme & { questions: GridQuestion[]};
 export type GridThemeWithQuestionsU = GridThemeU & { questions: GridQuestionU[]};
 
+export type RunningGame = Database['public']['Tables']['running_game']['Row'];
 
 export type TimedTheme = Database['public']['Tables']['timed_theme']['Row'];
 export type TimedThemeU = Database['public']['Tables']['timed_theme']['Update'];

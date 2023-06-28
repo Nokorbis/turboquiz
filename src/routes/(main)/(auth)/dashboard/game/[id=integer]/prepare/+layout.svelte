@@ -3,11 +3,15 @@
     import { derived } from 'svelte/store';
     import { AppRail, AppRailTile } from '@skeletonlabs/skeleton';
     import Fa from 'svelte-fa/src/fa.svelte'
-    import { faUsers, faHourglassHalf, faTableCells, faLandMineOn, faForwardStep } from '@fortawesome/free-solid-svg-icons'; 
+    import { faUsers, faHourglassHalf, faTableCells, faForwardStep } from '@fortawesome/free-solid-svg-icons'; 
     
     const selected = derived(page, $page => $page.url.pathname);
     const gameId = $page.params.id;
 </script>
+
+<svelte:head>
+    <title>Dashboard</title>
+</svelte:head>
 
 <div class="grid grid-cols-[auto_1fr] h-full">
     <AppRail {selected} active="bg-secondary-active-token">
