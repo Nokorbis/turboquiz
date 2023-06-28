@@ -1,6 +1,7 @@
 <script lang="ts">
 	import GameLoader from '../GameLoader.svelte';
     import type { PageData } from './$types';
+	import Explanation from './Explanation.svelte';
 	import GameChecker from './GameChecker.svelte';
 	import UrlList from './UrlList.svelte';
     
@@ -16,6 +17,7 @@
     >
     {#if game}
         <UrlList {baseUrl} {game} />
+        <Explanation />
         <GameChecker {supabase} {game} />
     {/if}
 </GameLoader>
