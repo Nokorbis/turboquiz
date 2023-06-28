@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { PageData } from './$types';
 	import Finalizer from './Finalizer.svelte';
-	import StreamManagement from './StreamManagement.svelte';
     
     export let data: PageData;
     const {supabase} = data;
@@ -17,9 +16,6 @@
     {#if error || !game}
         Une erreur est survenue durant le chargement de la session
     {:else}
-    <Finalizer {game} {supabase} let:gameState>
-        <StreamManagement {game} {supabase} {gameState}/>
-    </Finalizer>
-    
+        <Finalizer {game} {supabase}></Finalizer>
     {/if}
 {/await}

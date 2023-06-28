@@ -3,6 +3,7 @@
 	import type { Game } from "$lib/data/supabase/models";
     import { finalizeGameConfiguration } from "$lib/scripts/GameFactory";
 	import { toastStore } from "@skeletonlabs/skeleton";
+	import StreamManagement from "./StreamManagement.svelte";
 
     export let supabase: SupabaseClient;
     export let game: Game;
@@ -58,7 +59,7 @@
             <p>Les joueurs et les différentes questions sont consolidées dans un "état" et préparés pour pouvoir être utilisés en live. Cela signifie qu'ajouter ou supprimer des questions ne changera pas cet état après la finalisation. Il est toutefois possible de réinitialiser cet état plus tard, depuis le bouton "Factory", et ainsi remettre, par exemple, le score des joueurs à 0 (ou ajouter un joueur ou une question manquante).</p>
         </div>
     {:else}
-        <slot {gameState}></slot>
+        <StreamManagement {game} {supabase} {gameState} on:reset={() => gameState$ = loadGameState()}/>
     {/if}
 {/await}
 
