@@ -9,9 +9,9 @@
     export let supabase: SupabaseClient;
     export let game: Game;
 
-    function reset() {
+    async function reset() {
         try {
-            finalizeGameConfiguration(supabase, game);
+            await finalizeGameConfiguration(supabase, game);
         }
         catch (e: any) {
             console.error(e.message);

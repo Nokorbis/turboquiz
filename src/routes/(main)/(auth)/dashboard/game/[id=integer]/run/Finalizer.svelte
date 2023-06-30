@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { SupabaseClient } from "@supabase/supabase-js";
-	import type { Game } from "$lib/data/supabase/models";
+	import type { Game, RunningGame } from "$lib/data/supabase/models";
     import { finalizeGameConfiguration } from "$lib/scripts/GameFactory";
 	import { toastStore } from "@skeletonlabs/skeleton";
 	import StreamManagement from "./StreamManagement.svelte";
@@ -25,7 +25,7 @@
                     return {data: null, error: null};
                 }
 
-                return {data: data[0], error: null};
+                return {data: data[0] as RunningGame, error: null};
             });
     }
 

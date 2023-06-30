@@ -1,34 +1,49 @@
 <script lang="ts">
-    import type { SupabaseClient } from "@supabase/supabase-js";
-	import type { Game } from "$lib/data/supabase/models";
+	import { get, writable } from "svelte/store";
 	import { AppRail, AppRailTile } from "@skeletonlabs/skeleton";
+    import type { SupabaseClient } from "@supabase/supabase-js";
 	import Fa from "svelte-fa";
 	import { faDice, faHammer, faHourglassHalf, faTableCells } from "@fortawesome/free-solid-svg-icons";
 	import Factory from "./Factory.svelte";
-	import { writable } from "svelte/store";
+	import type { Game, RunningGame } from "$lib/data/supabase/models";
+    import { initStores, players$ } from "$lib/scripts/StateManager";
+    import { stream } from "$lib/scripts/StreamControl";
+	import PlayersManagement from "./PlayersManagement.svelte";
 
     export let supabase: SupabaseClient;
     export let game: Game;
-    export let gameState: any;
+    export let gameState: RunningGame;
 
-    let gameStateChannelStatus : string | null = null;
-    const gameStateChannel = supabase.channel('/game-state');
+
+    const gameStateChannel = supabase.channel(`${game.access_key}/game-state`);
     gameStateChannel.subscribe(status => {
-        gameStateChannelStatus = status;
+        if (!['SUBSCRIBED', 'CLOSED'].includes(status)) {
+            alert('Impossible d\'envoyer les données de la partie. Veuillez rafraichir la page (' + status + ')');
+        }
+    });
+    stream.initialize(gameStateChannel);
+
+    const playerChannel = supabase.channel(`${game.access_key}/player-state`);
+    playerChannel.on('broadcast', {event: 'join'}, (_) => {
+        console.log('Joined');
+        stream.sendPlayers(get(players$));
+        stream.sendLastData();
+    })
+    .subscribe(status => {
+        if (!['SUBSCRIBED', 'CLOSED'].includes(status)) {
+            alert('Impossible de recevoir les données des joueurs. Veuillez rafraichir la page (' + status + ')');
+        }
     });
 
-    function sendMessage() {
-        // gameStateChannel.send({
-        //     type: 'broadcast',
-        //     event: 'message',
-
-        //     data: "Hello World!"
-        // });
-    }
+    initStores(supabase, game);
+    players$.load(gameState.players as any[]);
+    players$.subscribe((players) => {
+        stream.sendPlayers(players);
+    });
 
     let currentTab = writable('initiative');
 </script>
-<div class="grid grid-cols-[auto_1fr] h-full">
+<div class="grid grid-cols-[auto_1fr] h-full overflow-y-hidden">
     <AppRail selected={currentTab} active="bg-secondary-active-token">
         <AppRailTile label="Initiative" value = "initiative" ><Fa icon={faDice}></Fa></AppRailTile>
         <AppRailTile label="Chrono" value = "chrono"><Fa icon={faHourglassHalf}></Fa></AppRailTile>
@@ -37,24 +52,37 @@
             <AppRailTile label="Factory" value="factory"><Fa icon={faHammer}></Fa></AppRailTile>
         </svelte:fragment>
     </AppRail>
-    <div class="page">
-        <div class="card bg-white p-4">
-            {#if $currentTab === 'factory'}
-                <Factory {supabase} {game} on:reset/>
-            {:else}
-                {JSON.stringify(gameState)}
-                <div>Status Game-Status: {gameStateChannelStatus}</div>
-                <button on:click={sendMessage}>Message</button>
-            {/if}
-        </div>
+    <div class="overflow-y-auto overflow-x-hidden">
+        {#if $currentTab === 'factory'}
+            <Factory {supabase} {game} on:reset/>
+        {:else}
+            <div class="control-grid h-full">
+                <div>
+                    <div class="m-2 card bg-white p-4 ">
+                        <PlayersManagement/>
+                    </div>
+                </div>
+                <div class="game-control">
+                    <div class="m-2 card bg-white p-4">
+                        <!-- TODO -->
+                    </div>
+                </div>
+                <div>
+                </div>
+            </div>
+        {/if}
     </div>
 </div>
 
 <style>
-    .page {
-        @apply my-2;
-        width: min(50rem, 100% - 1rem);
-        margin-inline: auto;      
+    .control-grid {
+        display: grid;
+        grid-template-columns: 2fr 3fr;
+        grid-template-rows: 1fr auto;
+    }
+
+    .game-control {
+        grid-row: span 2;
     }
 </style>
 

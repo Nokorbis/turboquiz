@@ -23,7 +23,7 @@
     }
 </script>
 
-<AppShell>
+<AppShell slotPageContent="h-full">
     <svelte:fragment slot="header">
 		<div class="flex flex-col bg-surface-100-800-token p-4">
             {#if profile}

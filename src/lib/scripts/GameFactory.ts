@@ -27,13 +27,20 @@ export async function finalizeGameConfiguration(supabase: SupabaseClient, game: 
             id: game.id,
             initiative_value: 50,
             players: players.map(p => { return {
+                id: p.id,
                 uid: p.user_id, 
                 name: p.profile.display_name,
                 picture: p.profile.profile_picture,
                 score: 0,
-                initiative: 50,
+                initiative: null,
                 initiativeOrder: 0,
-                displayOrder: 0
+                displayOrder: 0,
+                highlight: false,
+                themes: gridThemes.filter(t => t.owner_id === p.user_id)
+                .map(t => { return {
+                    name: t.name,
+                    color: t.color
+                }})
             }}),
             state: {
                 grid: {
